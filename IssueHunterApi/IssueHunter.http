@@ -1,0 +1,6 @@
+@IssueHunter_HostAddress = http://localhost:5015
+
+GET {{IssueHunter_HostAddress}}/
+Accept: application/json
+
+###

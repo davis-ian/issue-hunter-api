@@ -1,0 +1,102 @@
+############################
+# OS files
+############################
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+
+############################
+# Rider / JetBrains
+############################
+.idea/
+*.sln.iml
+
+
+############################
+# .NET build output
+############################
+bin/
+obj/
+*.user
+*.rsuser
+*.suo
+*.userprefs
+
+
+############################
+# Logs
+############################
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+############################
+# SQLite databases
+############################
+*.db
+*.sqlite
+*.sqlite3
+data/*.db
+data/*.db-shm
+data/*.db-wal
+
+
+############################
+# EF Core artifacts
+############################
+*.dbmdl
+*.jfm
+*.pfx
+
+
+############################
+# Node / frontend (future UI)
+############################
+node_modules/
+dist/
+build/
+.next/
+.cache/
+
+
+############################
+# Environment / secrets
+############################
+.env
+.env.*
+appsettings.Development.json
+secrets.json
+
+
+############################
+# Docker
+############################
+docker-compose.override.yml
+*.tar
+
+
+############################
+# Temporary files
+############################
+*.tmp
+*.temp
+*.swp
+*.bak
+
+
+############################
+# Coverage / test output
+############################
+coverage/
+TestResults/
+
+
+############################
+# Misc
+############################
+*.pid
+*.seed
