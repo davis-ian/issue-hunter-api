@@ -19,19 +19,20 @@ IssueHunter continually ingests "good first issues" from GitHub, filters out tic
 | Entity | Purpose | Key Fields |
 | --- | --- | --- |
 | `Issue` | Canonical record per GitHub issue | `GithubIssueId`, `Repository`, `IssueNumber`, `Labels`, timestamps |
-| `Search` | User-defined GitHub search definition | `Name`, raw `Query`, `Enabled`, `CreatedAt`, `LastPolledAt` |
+| `Search` | User-defined GitHub search/profile definition | `Name`, `Description`, labels, languages, `Query`, `IntervalMinutes`, `Priority`, `LastPolledAt`, `NextRunAfter` |
 | `SearchIssue` | Junction table to track discovery context | `SearchId`, `IssueId`, `DiscoveredAt` |
 
 ## Current Behavior
-- Worker seeds a sample “C# good first issues” search if missing, then polls GitHub every five minutes.
+- Worker now iterates enabled search profiles, respecting the `IssuePolling` configuration (enabled flag, interval, run-on-startup) instead of running unconditionally.
 - Issues with `pull_request` metadata are ignored, but there is no auth token so rate limits are low.
+- A `GitHubIssueQueryBuilder` composes the GitHub search string from profile labels/languages and enforces `state:open` plus `no:assignee` so results are unclaimed issues.
 - Controllers return raw entities without pagination or filtering yet.
 
 ## Near-Term Priorities
-1. **Configurable Polling Controls** – Introduce `IssuePolling` options in configuration so the worker can be toggled off during development, run on demand, and adhere to a tunable interval.
-2. **Per-Search Scheduling** – Track `LastPolledAt` and optional per-search intervals to avoid unnecessary GitHub calls.
-3. **Manual Poll Trigger** – Add an API endpoint for the future UI to request a poll on demand, which is especially helpful while the automatic worker is disabled locally.
-4. **Modular Search Management** – Build CRUD endpoints/UI to manage multiple search templates instead of hard-coded values.
+1. **Search Profiles & Rotation** – Finalize profile CRUD/seeding plus scheduling updates so each profile sets `NextRunAfter` after polling and rotates predictably.
+2. **Claimed-Issue Filtering** – Extend heuristics beyond `no:assignee`/“not a PR” (e.g., detect linked PRs or noisy conversations) so surfaced work is still available.
+3. **Manual Poll & Profile APIs** – Expose endpoints to list active profiles, trigger polls on demand, and return shaped issue DTOs suitable for the upcoming Vue UI.
+4. **Vue UI Foundations** – Start the frontend with filtering/sorting views once the API delivers curated, claim-free issues.
 
 ## Self-Hosting Path
 1. Local dev: `dotnet run --project IssueHunterApi` initializes `data/app.db` and exposes Swagger on `http://localhost:5015`.

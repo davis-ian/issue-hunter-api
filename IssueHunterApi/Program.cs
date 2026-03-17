@@ -1,3 +1,4 @@
+using IssueHunter.Configuration;
 using IssueHunter.Data;
 using IssueHunter.Services;
 using IssueHunter.Workers;
@@ -16,6 +17,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseSqlite("Data Source=data/app.db"));
 
+builder.Services.Configure<IssuePollingOptions>(
+    builder.Configuration.GetSection(IssuePollingOptions.SectionName));
+
 builder.Services.AddHostedService<IssuePollingWorker>();
 
 builder.Services.AddHttpClient<GitHubService>();
@@ -28,7 +32,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dbFactory = scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>();
     await using var db = await dbFactory.CreateDbContextAsync();
-    await db.Database.EnsureCreatedAsync();
+    await db.Database.MigrateAsync();
 }
 
 // Configure the HTTP request pipeline.

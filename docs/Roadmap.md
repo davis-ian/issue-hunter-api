@@ -7,25 +7,24 @@ Legend: [Done], [In Progress], [Planned]
 - [Done] Add EF Core models for `Issue`, `Search`, `SearchIssue` using SQLite storage.
 - [Done] Implement background worker that polls a sample GitHub query and persists deduped issues.
 
-## Phase 1 – Polling Controls & Search Scheduling ([In Progress])
-- [In Progress] Introduce `IssuePolling` configuration section (enable flag, interval, run-on-startup) and bind strongly typed options.
-- [In Progress] Update `IssuePollingWorker` to honor the new configuration, defaulting to disabled in dev.
-- [Planned] Track `LastPolledAt` and optional per-search intervals so polling runs only when due.
-- [Planned] Expose a manual poll endpoint to trigger ingestion on demand while the worker is disabled.
-- [Planned] Document the configuration defaults and recommended overrides for local vs. production use.
+## Phase 1 – Search Profiles & Polling Controls ([In Progress])
+- [Done] Introduce `IssuePolling` configuration section (enable flag, interval, run-on-startup) and bind strongly typed options.
+- [Done] Update `IssuePollingWorker` to honor the new configuration, defaulting to disabled in dev.
+- [In Progress] Define reusable search profiles (labels, languages, cadence metadata) and seed initial configurations the worker can load without manual edits.
+- [In Progress] Rotate through active profiles using `NextRunAfter` scheduling and the new GitHub query builder; still need to persist scheduling metadata after each poll.
+- [In Progress] Implement first-pass heuristics that skip claimed issues (currently enforcing `no:assignee` and ignoring PR hits; next step is richer signal checks).
 
-## Phase 2 – Surfacing & UX ([Planned])
-- [Planned] Extend Issues API with pagination, filters, and DTO shaping for UI consumption.
-- [Planned] Build Vue 3 frontend (Vite) to manage searches and explore curated issues.
-- [Planned] Add saved views and snooze/favorite actions stored in the backend.
-- [Planned] Evaluate need for authentication/authorization for multi-user setups.
+## Phase 2 – API Surface & Manual Poll ([Planned])
+- [Planned] Expose endpoints to list search profiles and trigger manual polls for dev workflows.
+- [Planned] Return issue DTOs with pagination, label breakdown, and curation metadata for the upcoming UI.
+- [Planned] Provide basic scoring/sorting parameters (freshness, label tiers) so the UI can prioritize results without extra logic.
 
-## Phase 3 – Notifications & Deployment ([Planned])
-- [Planned] Implement notification engine (email/webhook/desktop) with per-search rules.
+## Phase 3 – Frontend, Notifications & Deployment ([Planned])
+- [Planned] Build the Vue 3 frontend (Vite) for profile management and issue exploration.
+- [Planned] Add saved views, favorites/snooze actions, and evaluate auth requirements for multi-user installs.
+- [Planned] Implement notification engine (email/webhook/desktop) with per-profile rules.
 - [Planned] Continuously re-check stored issues for new PRs/assignees and auto-hide stale ones.
-- [Planned] Add health/metrics endpoints plus structured logging.
-- [Planned] Package the stack in Docker (API + eventual UI) once configuration is environment-driven and stable.
-- [Planned] Publish deployment + backup guidance for self-hosters.
+- [Planned] Add health/metrics endpoints plus structured logging, then package everything in Docker with deployment/backups guidance.
 
 ## Stretch Goals
 - [Planned] Leverage GitHub GraphQL for richer metadata (stars, reactions, comment counts).
