@@ -1,5 +1,7 @@
 using IssueHunter.Data;
+using IssueHunter.Dtos.Issue;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace IssueHunter.Controllers;
 
@@ -14,10 +16,20 @@ public class IssuesController : ControllerBase
     {
         _db = db;
     }
-    
+
     [HttpGet]
-    public IActionResult Get()
+    public async Task<ActionResult> Get(int pageNumber = 0, int pageSize = 10, string search = null)
     {
-        return Ok(_db.Issues.ToList());
+        var issuesQuery = _db.Issues
+            .OrderByDescending(i => i.Id);
+
+        var total = await issuesQuery.CountAsync();
+
+        var pagedIssues = issuesQuery
+            .Skip(pageNumber * pageSize)
+            .Take(pageSize)
+            .ToList();
+
+        return Ok(new { Total = total, Results = pagedIssues });
     }
 }
