@@ -14,13 +14,15 @@ Legend: [Done], [In Progress], [Planned]
 - [In Progress] Rotate through active profiles using `NextRunAfter` scheduling and the new GitHub query builder; still need to persist scheduling metadata after each poll.
 - [In Progress] Implement first-pass heuristics that skip claimed issues (currently enforcing `no:assignee` and ignoring PR hits; next step is richer signal checks).
 
-## Phase 2 – API Surface & Manual Poll ([Planned])
-- [Planned] Expose endpoints to list search profiles and trigger manual polls for dev workflows.
-- [Planned] Return issue DTOs with pagination, label breakdown, and curation metadata for the upcoming UI.
+## Phase 2 – API Surface & Manual Poll ([In Progress])
+- [Done] Expose Search profile read/create/update endpoints (`GET`, `GET by id`, `POST`, `PUT`) using DTO contracts.
+- [Done] Add paginated issue listing endpoint for frontend/API testing.
+- [In Progress] Expand issue responses to stable DTOs with filter inputs (`searchId`, label/language, viewed state).
+- [Planned] Expose manual poll endpoint(s) for dev workflows.
 - [Planned] Provide basic scoring/sorting parameters (freshness, label tiers) so the UI can prioritize results without extra logic.
 
-## Phase 3 – Frontend, Notifications & Deployment ([Planned])
-- [Planned] Build the Vue 3 frontend (Vite) for profile management and issue exploration.
+## Phase 3 – Frontend, Notifications & Deployment ([In Progress])
+- [In Progress] Bootstrap the Vue 3 frontend (Vite) for profile management and issue exploration.
 - [Planned] Add saved views, favorites/snooze actions, and evaluate auth requirements for multi-user installs.
 - [Planned] Implement notification engine (email/webhook/desktop) with per-profile rules.
 - [Planned] Continuously re-check stored issues for new PRs/assignees and auto-hide stale ones.

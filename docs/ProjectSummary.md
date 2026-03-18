@@ -26,13 +26,14 @@ IssueHunter continually ingests "good first issues" from GitHub, filters out tic
 - Worker now iterates enabled search profiles, respecting the `IssuePolling` configuration (enabled flag, interval, run-on-startup) instead of running unconditionally.
 - Issues with `pull_request` metadata are ignored, but there is no auth token so rate limits are low.
 - A `GitHubIssueQueryBuilder` composes the GitHub search string from profile labels/languages and enforces `state:open` plus `no:assignee` so results are unclaimed issues.
-- Controllers return raw entities without pagination or filtering yet.
+- Search APIs now use DTO-based create/update/read contracts; issues endpoint now supports basic pagination for frontend testing.
 
 ## Near-Term Priorities
 1. **Search Profiles & Rotation** – Finalize profile CRUD/seeding plus scheduling updates so each profile sets `NextRunAfter` after polling and rotates predictably.
 2. **Claimed-Issue Filtering** – Extend heuristics beyond `no:assignee`/“not a PR” (e.g., detect linked PRs or noisy conversations) so surfaced work is still available.
-3. **Manual Poll & Profile APIs** – Expose endpoints to list active profiles, trigger polls on demand, and return shaped issue DTOs suitable for the upcoming Vue UI.
-4. **Vue UI Foundations** – Start the frontend with filtering/sorting views once the API delivers curated, claim-free issues.
+3. **Issue DTO + Filters** – Replace raw issue payloads with stable response DTOs and add API filtering knobs the UI can rely on.
+4. **Manual Poll APIs** – Expose endpoint(s) to trigger polling on demand from the frontend while debugging.
+5. **Vue UI Foundations** – Bootstrap the frontend shell and wire search/issue views to the current API surface.
 
 ## Self-Hosting Path
 1. Local dev: `dotnet run --project IssueHunterApi` initializes `data/app.db` and exposes Swagger on `http://localhost:5015`.
