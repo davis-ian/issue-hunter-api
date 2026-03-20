@@ -23,6 +23,8 @@ builder.Services.Configure<IssuePollingOptions>(
 builder.Services.AddHostedService<IssuePollingWorker>();
 
 builder.Services.AddHttpClient<GitHubService>();
+builder.Services.AddScoped<IGitHubIssueIngestionService, GitHubIssueIngestionService>();
+builder.Services.AddScoped<IIssuePollingOrchestrator, IssuePollingOrchestrator>();
 
 builder.Services.AddControllers();
 
