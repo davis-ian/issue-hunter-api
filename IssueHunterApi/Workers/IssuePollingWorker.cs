@@ -59,7 +59,7 @@ public class IssuePollingWorker : BackgroundService
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error occurred when polling GitHub: " + ex.Message);
+                _logger.LogInformation("Error occurred when polling GitHub: " + ex.Message);
             }
 
             settings = _options.CurrentValue;

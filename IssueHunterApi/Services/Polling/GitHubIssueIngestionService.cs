@@ -25,7 +25,6 @@ public class GitHubIssueIngestionService : IGitHubIssueIngestionService
 
         var query = GitHubIssueQueryBuilder.ForSearch(search)
             .RequireNoAssignee()
-            .SortBy("created")
             .Build();
 
         var githubResult = await _github.SearchIssuesAsync(query);
@@ -88,22 +87,27 @@ public class GitHubIssueIngestionService : IGitHubIssueIngestionService
             db.Issues.AddRange(newIssues);
         }
 
-        var processedIssueIds = existingIssues.Values.Select(i => i.Id)
-            .Concat(newIssues.Select(i => i.Id))
+        var processedIssues = existingIssues.Values
+            .Concat(newIssues)
+            .ToList();
+
+        var existingIssueIds = processedIssues
+            .Where(i => i.Id > 0)
+            .Select(i => i.Id)
             .ToList();
 
         var existingLinkIssueIds = await db.SearchIssues
-            .Where(si => si.SearchId == search.Id && processedIssueIds.Contains(si.IssueId))
+            .Where(si => si.SearchId == search.Id && existingIssueIds.Contains(si.IssueId))
             .Select(si => si.IssueId)
             .ToListAsync(stoppingToken);
 
         var existingLinkSet = new HashSet<int>(existingLinkIssueIds);
-        var newLinks = processedIssueIds
-            .Where(id => !existingLinkSet.Contains(id))
-            .Select(issueId => new SearchIssue
+        var newLinks = processedIssues
+            .Where(issue => issue.Id == 0 || !existingLinkSet.Contains(issue.Id))
+            .Select(issue => new SearchIssue
             {
                 SearchId = search.Id,
-                IssueId = issueId,
+                Issue = issue,
                 DiscoveredAt = DateTimeOffset.UtcNow
             })
             .ToList();
@@ -141,8 +145,6 @@ public class GitHubIssueIngestionService : IGitHubIssueIngestionService
         private readonly List<string> _rawTokens = new();
         private string? _state;
         private bool _requireNoAssignee;
-        private string? _sortField;
-        private string? _sortDirection;
 
         public static GitHubIssueQueryBuilder ForSearch(Search search)
         {
@@ -258,27 +260,6 @@ public class GitHubIssueIngestionService : IGitHubIssueIngestionService
             return this;
         }
 
-        public GitHubIssueQueryBuilder SortBy(string field, string direction = "desc")
-        {
-            if (string.IsNullOrWhiteSpace(field))
-            {
-                throw new ArgumentException("Sort field is required.", nameof(field));
-            }
-
-            field = field.Trim().ToLowerInvariant();
-            direction = string.IsNullOrWhiteSpace(direction) ? "desc" : direction.Trim().ToLowerInvariant();
-
-            if (direction is not ("asc" or "desc"))
-            {
-                throw new ArgumentException("Sort direction must be 'asc' of 'desc'.", nameof(direction));
-            }
-
-            _sortField = field;
-            _sortDirection = direction;
-
-            return this;
-        }
-
         public string Build()
         {
             var tokens = new List<string>();
@@ -306,12 +287,6 @@ public class GitHubIssueIngestionService : IGitHubIssueIngestionService
             }
             
             tokens.AddRange(_rawTokens);
-
-            if (!string.IsNullOrWhiteSpace(_sortField))
-            {
-                tokens.Add($"sort:{_sortField}");
-                tokens.Add($"order:{_sortDirection ?? "desc"}");
-            }
 
             return string.Join(' ', tokens.Where(t => !string.IsNullOrWhiteSpace(t)));
         }

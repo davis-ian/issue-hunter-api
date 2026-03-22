@@ -1,6 +1,8 @@
 using IssueHunter.Data;
+using IssueHunter.Dtos.Polling;
 using IssueHunter.Dtos.Search;
 using IssueHunter.Models;
+using IssueHunter.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,10 +13,12 @@ namespace IssueHunter.Controllers;
 public class SearchController : ControllerBase
 {
     private readonly AppDbContext _db;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public SearchController(AppDbContext db)
+    public SearchController(AppDbContext db, IServiceScopeFactory serviceScopeFactory)
     {
         _db = db;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     [HttpGet]
@@ -86,6 +90,17 @@ public class SearchController : ControllerBase
         await _db.SaveChangesAsync();
 
         return Ok(ToResponse(search));
+    }
+
+    [HttpPost("{id:int}/poll")]
+    public async Task<ActionResult<PollRunSummaryDto>> PollSearch(int id, CancellationToken ct)
+    {
+        
+        using var scope = _serviceScopeFactory.CreateScope();
+        var orchestrator = scope.ServiceProvider.GetRequiredService<IIssuePollingOrchestrator>();
+        var result = await orchestrator.PollSearchAsync(id, ct);
+        
+        return Ok(result);
     }
     
     private static SearchResponseDto ToResponse(Search s) => new()

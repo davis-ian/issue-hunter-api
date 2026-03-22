@@ -166,12 +166,13 @@ public class IssuePollingOrchestrator : IIssuePollingOrchestrator
             result.Succeeded = false;
             result.Error = ex.Message;
 
+            search.LastResultCount = 0;
             search.LastError = ex.Message.Length > 500 ? ex.Message[..500] : ex.Message;
         }
         finally
         {
-            search.LastPolledAt = startedAt;
-            search.NextRunAfter = startedAt.AddMinutes(search.IntervalMinutes);
+            search.LastPolledAt = DateTimeOffset.UtcNow;
+            search.NextRunAfter = DateTimeOffset.UtcNow.AddMinutes(search.IntervalMinutes);
             result.NextRunAfter = search.NextRunAfter;
 
             await db.SaveChangesAsync(ct);
