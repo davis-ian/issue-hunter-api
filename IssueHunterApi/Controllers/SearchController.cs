@@ -13,12 +13,12 @@ namespace IssueHunter.Controllers;
 public class SearchController : ControllerBase
 {
     private readonly AppDbContext _db;
-    private readonly IServiceScopeFactory _serviceScopeFactory;
-
-    public SearchController(AppDbContext db, IServiceScopeFactory serviceScopeFactory)
+    private readonly IIssuePollingOrchestrator _issuePollingOrchestrator;
+    
+    public SearchController(AppDbContext db, IIssuePollingOrchestrator issuePollingOrchestrator)
     {
         _db = db;
-        _serviceScopeFactory = serviceScopeFactory;
+        _issuePollingOrchestrator = issuePollingOrchestrator;
     }
 
     [HttpGet]
@@ -96,9 +96,7 @@ public class SearchController : ControllerBase
     public async Task<ActionResult<PollRunSummaryDto>> PollSearch(int id, CancellationToken ct)
     {
         
-        using var scope = _serviceScopeFactory.CreateScope();
-        var orchestrator = scope.ServiceProvider.GetRequiredService<IIssuePollingOrchestrator>();
-        var result = await orchestrator.PollSearchAsync(id, ct);
+        var result = await _issuePollingOrchestrator.PollSearchAsync(id, ct);
         
         return Ok(result);
     }

@@ -10,11 +10,11 @@ namespace IssueHunter.Controllers;
 public class PollingController : ControllerBase
 {
 
-    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IIssuePollingOrchestrator _issuePollingOrchestrator;
     
-    public PollingController(IServiceScopeFactory serviceScopeFactory)
+    public PollingController(IIssuePollingOrchestrator issuePollingOrchestrator)
     {
-        _serviceScopeFactory = serviceScopeFactory;
+        _issuePollingOrchestrator = issuePollingOrchestrator;
     }
     
     
@@ -22,9 +22,7 @@ public class PollingController : ControllerBase
     public async Task<ActionResult<PollRunSummaryDto>> PollAllDueSearches(CancellationToken ct)
     {
         
-        using var scope = _serviceScopeFactory.CreateScope();
-        var orchestrator = scope.ServiceProvider.GetRequiredService<IIssuePollingOrchestrator>();
-        var result = await orchestrator.PollDueSearchesAsync(ct);
+        var result = await _issuePollingOrchestrator.PollDueSearchesAsync(ct);
 
         return Ok(result);
     }
