@@ -52,9 +52,9 @@ public class IssuePollingWorker : BackgroundService
 
             try
             {
-                using var scope = _serviceScopeFactory.CreateScope();
-                var orchestrator = scope.ServiceProvider.GetRequiredService<IIssuePollingOrchestrator>();
-                await orchestrator.PollDueSearchesAsync(stoppingToken);
+                // using var scope = _serviceScopeFactory.CreateScope();
+                // var orchestrator = scope.ServiceProvider.GetRequiredService<IIssuePollingOrchestrator>();
+                // await orchestrator.PollDueSearchesAsync(stoppingToken);
 
             }
             catch (Exception ex)

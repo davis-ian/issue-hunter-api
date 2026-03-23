@@ -27,8 +27,12 @@ public class GitHubService
 
     public async Task<GitHubSearchResponseDto> SearchIssuesAsync(string query)
     {
+        int pageSize = 100;
+        string sortBy = "created";
+        string order = "desc";
+        
         var url =
-            $"https://api.github.com/search/issues?q={Uri.EscapeDataString(query)}&sort=created&order=desc";
+            $"https://api.github.com/search/issues?q={Uri.EscapeDataString(query)}&sort={sortBy}&order={order}&per_page={pageSize}";
         
         var response = await _client.GetAsync(url);
         response.EnsureSuccessStatusCode();
@@ -42,6 +46,38 @@ public class GitHubService
             throw new InvalidOperationException("Failed to deserialize GitHub search response.");
         }
             
+        return result;
+    }
+
+    public async Task<GitHubRepositoryDto?> GetRepositoryAsync(string owner, string name,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(owner))
+            throw new ArgumentException("Owner is required.", nameof(owner));
+
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentException("Repository name is required.", nameof(name));
+
+        var url = $"https://api.github.com/repos/{Uri.EscapeDataString(owner)}/{Uri.EscapeDataString(name)}";
+
+        var response = await _client.GetAsync(url, ct);
+
+        if (response.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+
+        response.EnsureSuccessStatusCode();
+
+        var json = await response.Content.ReadAsStringAsync(ct);
+
+        var result = JsonSerializer.Deserialize<GitHubRepositoryDto>(json, _jsonOptions);
+
+        if (result is null)
+        {
+            throw new InvalidOperationException("Failed to deserialize GitHub repository response.");
+        }
+
         return result;
     }
 }

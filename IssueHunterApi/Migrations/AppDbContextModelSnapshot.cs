@@ -45,6 +45,9 @@ namespace IssueHunter.Migrations
                     b.Property<DateTimeOffset>("LastSeenAt")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("RepoId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Repository")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -66,13 +69,18 @@ namespace IssueHunter.Migrations
                     b.HasIndex("GithubIssueId")
                         .IsUnique();
 
+                    b.HasIndex("RepoId");
+
                     b.ToTable("Issues");
                 });
 
-            modelBuilder.Entity("IssueHunter.Models.Search", b =>
+            modelBuilder.Entity("IssueHunter.Models.Repo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Archived")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset>("CreatedAt")
@@ -85,14 +93,18 @@ namespace IssueHunter.Migrations
                     b.Property<bool>("Enabled")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("IntervalMinutes")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Labels")
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Languages")
+                    b.Property<string>("HtmlUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("IntervalMinutes")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Language")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -100,86 +112,50 @@ namespace IssueHunter.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("LastPolledAt")
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("LastResultCount")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTimeOffset?>("LastSyncedAt")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset?>("NextRunAfter")
+                    b.Property<DateTimeOffset?>("NextSyncAfter")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("OpenIssueCount")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Owner")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Priority")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Query")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("StarCount")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Searches");
-                });
-
-            modelBuilder.Entity("IssueHunter.Models.SearchIssue", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTimeOffset>("DiscoveredAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("IssueId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("SearchId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IssueId");
-
-                    b.HasIndex("SearchId", "IssueId")
-                        .IsUnique();
-
-                    b.ToTable("SearchIssues");
-                });
-
-            modelBuilder.Entity("IssueHunter.Models.SearchIssue", b =>
-                {
-                    b.HasOne("IssueHunter.Models.Issue", "Issue")
-                        .WithMany("SearchIssues")
-                        .HasForeignKey("IssueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("IssueHunter.Models.Search", "Search")
-                        .WithMany("SearchIssues")
-                        .HasForeignKey("SearchId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Issue");
-
-                    b.Navigation("Search");
+                    b.ToTable("Repos");
                 });
 
             modelBuilder.Entity("IssueHunter.Models.Issue", b =>
                 {
-                    b.Navigation("SearchIssues");
+                    b.HasOne("IssueHunter.Models.Repo", null)
+                        .WithMany("Issues")
+                        .HasForeignKey("RepoId");
                 });
 
-            modelBuilder.Entity("IssueHunter.Models.Search", b =>
+            modelBuilder.Entity("IssueHunter.Models.Repo", b =>
                 {
-                    b.Navigation("SearchIssues");
+                    b.Navigation("Issues");
                 });
 #pragma warning restore 612, 618
         }

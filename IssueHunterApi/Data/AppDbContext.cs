@@ -6,8 +6,7 @@ namespace IssueHunter.Data;
 public class AppDbContext : DbContext
 {
     public DbSet<Issue> Issues => Set<Issue>();
-    public DbSet<Search> Searches => Set<Search>();
-    public DbSet<SearchIssue> SearchIssues => Set<SearchIssue>();
+    public DbSet<Repo> Repos => Set<Repo>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -18,10 +17,6 @@ public class AppDbContext : DbContext
     {
         modelBuilder.Entity<Issue>()
             .HasIndex(i => i.GithubIssueId)
-            .IsUnique();
-
-        modelBuilder.Entity<SearchIssue>()
-            .HasIndex(si => new { si.SearchId, si.IssueId })
             .IsUnique();
     }
 }

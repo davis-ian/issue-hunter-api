@@ -11,22 +11,28 @@ Legend: [Done], [In Progress], [Planned]
 - [Done] Introduce `IssuePolling` configuration section (enable flag, interval, run-on-startup) and bind strongly typed options.
 - [Done] Update `IssuePollingWorker` to honor the new configuration, defaulting to disabled in dev.
 - [In Progress] Define reusable search profiles (labels, languages, cadence metadata) and seed initial configurations the worker can load without manual edits.
-- [In Progress] Rotate through active profiles using `NextRunAfter` scheduling and the new GitHub query builder; still need to persist scheduling metadata after each poll.
+- [Done] Rotate through active profiles using `NextRunAfter` scheduling and persist per-search polling metadata after each run (`LastPolledAt`, `NextRunAfter`, `LastResultCount`, `LastError`).
 - [In Progress] Implement first-pass heuristics that skip claimed issues (currently enforcing `no:assignee` and ignoring PR hits; next step is richer signal checks).
 
 ## Phase 2 – API Surface & Manual Poll ([In Progress])
 - [Done] Expose Search profile read/create/update endpoints (`GET`, `GET by id`, `POST`, `PUT`) using DTO contracts.
 - [Done] Add paginated issue listing endpoint for frontend/API testing.
 - [In Progress] Expand issue responses to stable DTOs with filter inputs (`searchId`, label/language, viewed state).
-- [Planned] Expose manual poll endpoint(s) for dev workflows.
+- [Done] Expose manual poll endpoints for dev workflows (`POST /api/polling/all`, `POST /api/searches/{id}/poll`).
 - [Planned] Provide basic scoring/sorting parameters (freshness, label tiers) so the UI can prioritize results without extra logic.
 
 ## Phase 3 – Frontend, Notifications & Deployment ([In Progress])
-- [In Progress] Bootstrap the Vue 3 frontend (Vite) for profile management and issue exploration.
+- [In Progress] Build the Vue 3 frontend shell and issue/search views (dark/light theming, design-system primitives, typed API client/composables).
 - [Planned] Add saved views, favorites/snooze actions, and evaluate auth requirements for multi-user installs.
 - [Planned] Implement notification engine (email/webhook/desktop) with per-profile rules.
 - [Planned] Continuously re-check stored issues for new PRs/assignees and auto-hide stale ones.
 - [Planned] Add health/metrics endpoints plus structured logging, then package everything in Docker with deployment/backups guidance.
+
+## MVP Focus – Next Execution Slice ([In Progress])
+- [In Progress] Wire frontend "Sync Now" and per-profile actions to manual poll endpoints.
+- [Planned] Finalize stable issues DTO/filter contract (`searchId`, label text, repository text).
+- [Planned] Add GitHub token configuration support to improve rate-limit reliability.
+- [Planned] Produce first self-hostable Docker Compose setup (frontend + API + persisted SQLite volume).
 
 ## Stretch Goals
 - [Planned] Leverage GitHub GraphQL for richer metadata (stars, reactions, comment counts).

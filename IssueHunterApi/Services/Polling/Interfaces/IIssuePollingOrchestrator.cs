@@ -4,6 +4,6 @@ namespace IssueHunter.Services;
 
 public interface IIssuePollingOrchestrator
 {
-    Task<PollRunSummaryDto> PollDueSearchesAsync(CancellationToken ct);
-    Task<PollRunSummaryDto> PollSearchAsync(int searchId, CancellationToken ct);
+    // Task<PollRunSummaryDto> PollDueSearchesAsync(CancellationToken ct);
+    // Task<PollRunSummaryDto> PollSearchAsync(int searchId, CancellationToken ct);
 }

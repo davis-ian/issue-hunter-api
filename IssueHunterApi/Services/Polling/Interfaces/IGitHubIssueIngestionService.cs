@@ -6,5 +6,5 @@ namespace IssueHunter.Services;
 
 public interface IGitHubIssueIngestionService
 {
-    Task<PollSearchResultDto> IngestSearchAsync(AppDbContext db, Search search, CancellationToken ct);
+    // Task<PollSearchResultDto> IngestSearchAsync(AppDbContext db, Search search, CancellationToken ct);
 }

@@ -24,9 +24,6 @@ public class Issue
     // When our system discovered it
     public DateTimeOffset FirstSeenAt { get; set; }
     public DateTimeOffset LastSeenAt { get; set; }
-    
-    // Navigation
-    public List<SearchIssue> SearchIssues { get; set; } = new();
 }
 
 

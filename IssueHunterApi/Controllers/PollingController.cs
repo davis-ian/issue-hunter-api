@@ -16,14 +16,4 @@ public class PollingController : ControllerBase
     {
         _issuePollingOrchestrator = issuePollingOrchestrator;
     }
-    
-    
-    [HttpPost("all")]
-    public async Task<ActionResult<PollRunSummaryDto>> PollAllDueSearches(CancellationToken ct)
-    {
-        
-        var result = await _issuePollingOrchestrator.PollDueSearchesAsync(ct);
-
-        return Ok(result);
-    }
 }

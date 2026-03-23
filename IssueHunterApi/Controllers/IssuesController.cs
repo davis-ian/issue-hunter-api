@@ -33,21 +33,4 @@ public class IssuesController : ControllerBase
         return Ok(new { Total = total, Results = pagedIssues });
     }
 
-    [HttpDelete("{id:int}")]
-    public async Task<ActionResult> Delete(int id)
-    {
-
-        var search = await _db.Searches.Where(s  => s.Id == id).FirstOrDefaultAsync();
-
-        if (search == null)
-        {
-            return NotFound("search not found.");
-        }
-        
-        _db.Searches.Remove(search);
-        await _db.SaveChangesAsync();
-
-        return NoContent();
-    }
-    
 }
